@@ -1,0 +1,250 @@
+---
+title: "FOR_PAPER_plotting_figure2"
+author: "Anne Kruijt"
+date: '2023-11-08'
+---
+
+#---------------------------------------------------------------- #-------- Plotting script figure 2 Coral paper -------#
+
+```{r}
+
+library(ggpubr)
+library(ggplot2)
+library(patchwork)
+library(cowplot)
+library(grid)
+library(gridExtra)
+library(reshape2)
+
+```
+
+```{r}
+source("SETTINGS_script_coral_calcification.R")
+source("FUNCTIONS_script_coral_calcification.R")
+```
+
+```{r}
+#----- Reading in files------------------------------------------------#
+filelocation <- "./model_output/"
+data_Tmodern_t0_ddtvar <- read.csv("../output_for_plotting/_Tmodern_f0_MAXT36_ddtVar_CalcYear_.csv")
+
+data_T3_t0_ddtvar <- read.csv("../output_for_plotting/_T3_f0_MAXT36_ddtVar_CalcYear_.csv")
+
+data_T6_t0_ddtvar <- read.csv("../output_for_plotting/_T6_f0_MAXT36_ddtVar_CalcYear_.csv")
+
+data_T6_t0_ddtvar_thresh_high <- read.csv("../output_for_plotting/_T6_f0_MAXT36_ddtVar_thresh_high_CalcYear_.csv")
+
+data_T6_t0_ddtvarUnlimMaxT <- read.csv("../output_for_plotting/_T6_f0_MAXT50_ddtVar_CalcYear_.csv")
+
+data_T6_t0_ddtvarUnlimMaxT_thresh_high <- read.csv("../output_for_plotting/_T6_f0_MAXT50_ddtVar_thresh_high_CalcYear_.csv")
+
+
+data_T9_t0_ddtvar <- read.csv("../output_for_plotting/_T9_f0_MAXT36_ddtVar_CalcYear_.csv")
+
+data_T9_t0_ddtvar_thresh_high <- read.csv("../output_for_plotting/_T9_f0_MAXT36_ddtVar_thresh_high_CalcYear_.csv")
+
+data_T9_t0_ddtvarUnlimMaxT <- read.csv("../output_for_plotting/_T9_f0_MAXT50_ddtVar_CalcYear_.csv")
+
+data_T9_t0_ddtvarUnlimMaxT_thresh_high <- read.csv("../output_for_plotting/_T9_f0_MAXT50_ddtVar_thresh_high_CalcYear_.csv")
+
+```
+
+#------------- creating data frame for plotting of combination of scenarios -------#
+
+```{r}
+latitude = lats
+
+df1 <- data_Tmodern_t0_ddtvar
+colnames(df1) <- c("latitude", "dd26", "dd365")
+
+df2 <- data_T3_t0_ddtvar
+colnames(df2) <- c("latitude", "dd26", "dd365")
+
+df3 <- data_T6_t0_ddtvar
+colnames(df3) <- c("latitude", "dd26", "dd365")
+
+df4 <- data_T6_t0_ddtvar_thresh_high
+colnames(df4) <- c("latitude", "dd26", "dd365")
+
+df5 <- data_T9_t0_ddtvar
+colnames(df5) <- c("latitude", "dd26", "dd365")
+
+df6 <- data_T9_t0_ddtvar_thresh_high
+colnames(df6) <- c("latitude", "dd26", "dd365")
+
+df7 <- data_T6_t0_ddtvarUnlimMaxT
+colnames(df7) <- c("latitude", "dd26", "dd365")
+
+df8 <- data_T6_t0_ddtvarUnlimMaxT_thresh_high
+colnames(df8) <- c("latitude", "dd26", "dd365")
+
+df9 <- data_T9_t0_ddtvarUnlimMaxT
+colnames(df9) <- c("latitude", "dd26", "dd365")
+
+df10 <- data_T9_t0_ddtvarUnlimMaxT_thresh_high
+colnames(df10) <- c("latitude", "dd26", "dd365")
+
+```
+
+
+```{r, fig.height=8, fig.width=10}
+
+# combining data, for plotting together in one graph
+df_1 <- cbind(df1$dd365) # Modern scenario
+df_2 <- cbind(df2$dd365) # T3 scenario 
+df_34 <- cbind(df3$dd365, df4$dd26 ) # T6 scenario with low threshold together with T6 scenario with high threshold
+df_4 <- cbind(df4$dd365, df4$dd26)
+df_56 <- cbind(df5$dd365, df6$dd26, df5$dd26)  # T9 scenario with low threshold together with T9 with high threshold
+df_6 <- cbind(df6$dd365, df6$dd26)
+
+df_newT6 <- cbind( df7$dd365, df8$dd26, df4$dd365) # T6 no maxT limit and no light threshold; T6 no max T limit and high light threshold, T6 maxT at 36 and no ligth threshold
+
+df_newT9 <- cbind( df9$dd365, df9$dd26,df10$dd26, df6$dd365)  # T6 no maxT limit and no light threshold; T6 no max T limit and low light threshold, T6 maxT at 36 and no ligth threshold
+
+# scaling the matrices for better comparison of scenarios
+df_1 <- scaling(df_1)
+df_2 <- scaling(df_2)
+df_34 <- scaling(df_34)
+df_4 <- scaling(df_4)
+df_56 <- scaling(df_56)
+df_6 <- scaling(df_6)
+df_newT6 <- scaling(df_newT6)
+df_newT9 <- scaling(df_newT9) 
+
+# creating a dataframe, for easy plotting
+df_to_plot1 <- as.data.frame(array(dim= c(length(latitude), length(df_1[1,])), data = df_1 ))
+df_to_plot2 <- as.data.frame(array(dim= c(length(latitude), length(df_2[1,])), data = df_2 ))
+df_to_plot34 <- as.data.frame(array(dim= c(length(latitude), length(df_34[1,])), data = df_34 ))
+df_to_plot4 <- as.data.frame(array(dim= c(length(latitude), length(df_4[1,])), data = df_4 ))
+df_to_plot56 <- as.data.frame(array(dim= c(length(latitude), length(df_56[1,])), data = df_56 ))  
+df_to_plot6 <- as.data.frame(array(dim= c(length(latitude), length(df_6[1,])), data = df_6 ))  
+df_to_plot6new <- as.data.frame(array(dim= c(length(latitude), length(df_newT6[1,])), data = df_newT6 ))
+df_to_plot9new <- as.data.frame(array(dim= c(length(latitude), length(df_newT9[1,])), data = df_newT9 ))
+
+colnames(df_to_plot1) <- c('365 dark day tolerance') # , '30 dark day tolerance') #, '7 dark day tolerance')
+colnames(df_to_plot2) <- c('365 dark day tolerance')# , '28 dark day tolerance', '7 dark day tolerance')
+colnames(df_to_plot34) <- c('365 dark day tolerance', '30 dark day tolerance') #, '7 dark day tolerance')
+colnames(df_to_plot4) <- c('365 dark day tolerance', '30 dark day tolerance')
+colnames(df_to_plot56) <- c('365 dark day tolerance', "eocene coral limit", '30 dark day tolerance')
+colnames(df_to_plot6new) <- c('365 dark day tolerance', "eocene coral limit", 'maxTemp included')
+colnames(df_to_plot9new) <- c('365 dark day tolerance', "25 dark day tolerance", "highthreshold", 'maxTemp included')
+
+df_to_plot1 <- cbind(df_to_plot1, latitude = latitude) #seq(0, 90,1)  )
+df_to_plot2 <- cbind(df_to_plot2, latitude = latitude)
+df_to_plot34 <- cbind(df_to_plot34, latitude = latitude)
+df_to_plot4 <- cbind(df_to_plot4, latitude = latitude)
+df_to_plot56 <- cbind(df_to_plot56, latitude = latitude)
+df_to_plot6 <- cbind(df_to_plot6, latitude = latitude)
+df_to_plot6new <- cbind(df_to_plot6new, latitude = latitude)
+df_to_plot9new <- cbind(df_to_plot9new, latitude = latitude)
+
+df_long_to_plot1 <- melt(df_to_plot1 , id.vars = "latitude", measure.vars = c('365 dark day tolerance' ))
+df_long_to_plot2 <- melt(df_to_plot2 , id.vars = "latitude", measure.vars = c('365 dark day tolerance' ))
+df_long_to_plot34 <- melt(df_to_plot34 , id.vars = "latitude", measure.vars = c('365 dark day tolerance', '30 dark day tolerance'))
+df_long_to_plot4 <- melt(df_to_plot4, id.vars = "latitude", measure.vars = c('365 dark day tolerance' , '30 dark day tolerance'))
+df_long_to_plot6new <- melt(df_to_plot6new, id.vars = "latitude", measure.vars = c('365 dark day tolerance', "eocene coral limit", 'maxTemp included'))
+df_long_to_plot9new <- melt(df_to_plot9new, id.vars = "latitude", measure.vars = c('365 dark day tolerance', "25 dark day tolerance", "highthreshold", 'maxTemp included'))
+
+
+######################## function for adding text to the plots ###########################
+
+#Function to create a plot with both top and bottom text boxes
+add_text_box_both <- function(plot, text_top, text_bottom) {
+  plot +
+    annotation_custom(
+      grob = textGrob(
+        label = text_top,
+        x = min(df_long_to_plot1$latitude),
+        y = max(df_long_to_plot1$value) * 0.96,
+        just = c("left", "top"),
+        gp = gpar(col = "black", fontsize = 12)
+      ),
+      xmin = min(df_long_to_plot1$latitude), xmax = min(df_long_to_plot1$latitude),
+      ymin = max(df_long_to_plot1$value) * 0.96, ymax = max(df_long_to_plot1$value) * 0.96
+    ) +
+    annotation_custom(
+      grob = textGrob(
+        label = text_bottom,
+        x = min(df_long_to_plot1$latitude),
+        y = min(df_long_to_plot1$value +1 ),
+        just = c("left", "bottom"),
+        gp = gpar(col = "black", fontsize = 12)
+      ),
+      xmin = min(df_long_to_plot1$latitude), xmax = min(df_long_to_plot1$latitude),
+      ymin = min(df_long_to_plot1$value), ymax = min(df_long_to_plot1$value + 1)
+    )
+}
+
+```
+
+
+
+```{r}
+#--------------------- Plotting ---------------------------#
+
+col = (hcl.colors(5, "Zissou 1"))
+
+
+p_yearlycalcification1 <- ggplot(data = df_long_to_plot1, aes(x = latitude, y = value, lty= variable)) +
+  geom_line(size = 0.8, color = col[1]) +
+  scale_x_continuous(breaks = seq(0, 90, 10), name = "") +
+  scale_y_continuous(breaks = seq(0,100, 10), name= "% of maximum calcification") +
+  theme_classic()+
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), panel.grid.major = element_line(color = "gray", linetype = "solid")) +
+  theme(legend.position = "none")
+
+p_yearlycalcification2 <- ggplot(data = df_long_to_plot2, aes(x = latitude, y = value, lty= variable)) +
+  geom_line(size = 0.8, color = col[3]) +
+  scale_x_continuous(breaks = seq(0, 90, 10), name = "") +
+  scale_y_continuous(breaks = seq(0,100, 10), name= "% of maximum calcification") +
+  theme_classic()+
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), panel.grid.major = element_line(color = "gray", linetype = "solid")) +
+  theme(legend.position = "none")
+
+p_yearlycalcification3 <- ggplot(data = df_long_to_plot6new, aes(x = latitude, y = value, lty= variable)) +
+  geom_line(size = 0.8, color = col[4]) +
+  scale_linetype_manual(values=c("solid", "dashed", "dotted"))+
+  scale_x_continuous(breaks = seq(0, 90, 10), name = "") +
+  scale_y_continuous(breaks = seq(0,100, 10), name= "% of maximum calcification") +
+  theme_classic()+
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), panel.grid.major = element_line(color = "gray", linetype = "solid")) +
+  theme(legend.position = "none")
+
+p_yearlycalcification4 <- ggplot(data = df_long_to_plot9new, aes(x = latitude, y = value, lty= variable)) +
+  geom_line(size = 0.8, color = col[5]) +
+  scale_linetype_manual(values=c("solid", "longdash", "dashed", "dotted"))+
+  scale_x_continuous(breaks = seq(0, 90, 10), name = "Latitude") +
+  scale_y_continuous(breaks = seq(0,100, 10), name= "% of maximum calcification") +
+  theme_classic()+
+  theme(axis.title.x = element_text(size =12), axis.title.y = element_blank(), panel.grid.major = element_line(color = "gray", linetype = "solid")) +
+  theme(legend.position = "none")
+
+# Create the plots with text boxes
+p1_with_text_both <- add_text_box_both(p_yearlycalcification1, "Modern", "A")
+p2_with_text_both <- add_text_box_both(p_yearlycalcification2, "x3 CO2", "B")
+p3_with_text_both <- add_text_box_both(p_yearlycalcification3, "x6 CO2", "C")
+p4_with_text_both <- add_text_box_both(p_yearlycalcification4, "x9 CO2", "D")
+
+
+```
+
+```{r}
+
+## Saving figure as pdf
+
+ pdf(file="FIGURE2_CORAL_PAPER.pdf", width = 12, height = 14)
+
+## Combine both sets of plots
+combined_plots <- ggarrange(p1_with_text_both, p2_with_text_both, p3_with_text_both, p4_with_text_both,
+                            ncol=1, nrow = 4, align = "h")
+
+## Annotating the figure
+ annotate_figure(combined_plots, left = text_grob("% of maximum calcification",size = 12, color = "black", rot = 90) )
+
+
+dev.off()
+
+```
+
+
+

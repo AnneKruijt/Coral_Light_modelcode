@@ -1,0 +1,151 @@
+---
+title: "FOR_PAPER_plotting_figure1"
+author: "Anne Kruijt"
+date: '2023-11-08'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load required library
+```{r}
+#install.packages("devtools")
+#install.packages("ggpattern")
+#install.packages("pracma")
+
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(ggpattern)
+library(pracma)
+library(tidyr)
+```
+
+# Reading in files
+```{r}
+
+# reading in reef occurrences table}
+## data obtained from: Kiessling, W., & Krause, M. C. (2022). PARED - An online database of Phanerozoic reefs. https://www.paleo-reefs.pal.uni-erlangen.de 
+
+LATLON_data <- read.csv("../data_files/Eocene_latlon_corals.csv", sep = ";") # file containing coordinates of the Eocene coral occurrences
+Yaxis <- rep(1, length(LATLON_data$PALEO.LAT..Scotese.))  # y set to 1, because the y-axis is not meaningful for 'occurrence'
+
+# reading in temperature data
+## original Eocene temperature data obtained from: Zhu, J., Poulsen, C. J., & Tierney, J. E. (2019). Simulation of Eocene extreme warmth and high climate sensitivity through cloud feedbacks. Science Advances, 5(9). https://doi.org/10.1126/sciadv.aax1874 
+## original modern temperature data obtained from:
+
+TempModern_to_plot <- read.csv("../data_files/TempModernMinM.csv")
+Tempx3_to_plot <- read.csv("../data_files/Tempx3MinM.csv")
+Tempx6_to_plot <- read.csv("../data_files/Tempx6MinM.csv")
+Tempx9_to_plot <- read.csv("../data_files/Tempx9MinM.csv")
+
+# making an array of latitudes
+original_latitudes <- seq(-90, 90, length.out = 181)
+
+```
+
+
+```{r}
+data <- data.frame(
+  Latitude = original_latitudes,
+  Modern = TempModern_to_plot[, 2],
+  x3 = Tempx3_to_plot[, 2],
+  x6 = Tempx6_to_plot[, 2],
+  x9 = Tempx9_to_plot[, 2]
+)
+
+# Convert data to long format for ggplot2
+data_long <- gather(data, key = "Scenario", value = "Temperature", -Latitude)
+
+# lines for the modern coral occurrence block
+xpolygon <- seq(-34, 34, 1)
+y1polygon <- rep(16, length(xpolygon))
+y2polygon <- rep(36, length(xpolygon))
+
+xpolygon2 <- seq(-30, 30, 1)
+y1polygon2 <- rep(16, length(xpolygon2))
+y2polygon2 <- rep(36, length(xpolygon2))
+
+
+# Function to create diagonal lines pattern
+# diagonal_pattern <- function(angle, density) {
+#   list(
+#     pattern = "diagonal",
+#     pattern_angle = angle,
+#     pattern_density = density
+#   )
+# }
+
+# colours for the temperature scenarios, same as in figure 2
+colors = (hcl.colors(5, "Zissou 1"))
+plotcolors <- c(colors[1], colors[3], colors[4], colors[5])
+
+# All ggplot layers together.
+plot_fig1 <- ggplot() +
+  geom_line(data = data_long, aes(x = Latitude, y = Temperature, color = Scenario), linewidth = 1.) +
+  scale_color_manual(values = plotcolors)+
+  geom_point(data = LATLON_data, aes(x = PALEO.LAT..Scotese., y = Yaxis), shape = 22, color = "coral", size=3) + 
+  geom_polygon_pattern(
+    data = data.frame(x = c(-34, 34, 34, -34), y = c(16, 16, 36, 36)),
+    aes(x, y),
+    fill = NA,
+    pattern = "stripe",
+    pattern_fill = NA,
+    pattern_density = 0,
+    pattern_angle = 45,
+    color = "black"
+  ) +
+  geom_polygon_pattern(
+    data = data.frame(x = c(-30, 30, 30, -30), y = c(16, 16, 36, 36)),
+    aes(x, y),
+    fill = NA,
+    pattern = "stripe",
+    pattern_fill = NA,
+    pattern_density = 0.5,
+    pattern_angle = 45,
+    color = "black"
+  ) +
+  labs(x = "Latitude", y = "Temperature", color = "Temperature scenarios") +
+  xlim(-90, 90) +
+  ylim(0, 50) +
+  guides(color = guide_legend(title = "Temperature scenarios"))+
+  annotate("text", x = 90, y = 47, label = "Eocene corals",color = "black", size = 10/.pt, hjust = 1) +
+  annotate("text", x = 65, y = 44.5, label = "\u25A1",color = "coral", size = 5, hjust = 1) +
+  annotate("text", x = 69, y = 44, label = "occurrence",color = "black", size = 10/.pt, hjust = 0.1) +
+  annotate("text", x = 0, y = 13, label = "Modern Corals", color = "black", size = 10/.pt) +
+  annotate("text", x = -13, y = 10, label = "\u25A8", color = "black", size = 3.8) +
+  annotate("text", x = +5, y = 10, label = "occurrence", color = "black", size = 10/.pt)+
+  theme_classic() +
+  theme(
+    axis.title.y = element_text(size = 12),
+    axis.title.x = element_text(size = 12),
+    axis.text = element_text(size =12),
+    legend.position = c(0.02, 0.95),
+    legend.justification = c(0, 1),
+    plot.margin = margin(r = 2, unit = "cm"),
+    legend.text = element_text(size = 10),
+    legend.title = element_text(size = 10),
+    legend.background = element_rect(color = "black", size = 0.5),
+    panel.grid.major = element_line(color = "gray", linetype = "solid")
+  )
+
+plot_fig1
+```
+
+```{r }
+## Saving the figure as a pdf
+
+# pdf("FIGURE1_CORAL_PAPER.pdf", width = 15, height = 10)
+# print(plot_fig1)
+# dev.off()
+
+
+```
+
+
+
+

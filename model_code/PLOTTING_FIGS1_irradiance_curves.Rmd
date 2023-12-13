@@ -1,0 +1,132 @@
+---
+title: "FOR_PAPER_plotting_irradiance"
+author: "Anne Kruijt"
+date: '2023-11-06'
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(stringr)
+library(scales)
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr:: opts_chunk$set(out.width='1000px', dpi=200)
+```
+
+
+```{r}
+# scripts containing general functions and settings
+
+source("SETTINGS_script_coral_calcification.R")
+source("FUNCTIONS_script_coral_calcification.R")
+
+```
+
+#---- Reading in the files to be plotted ----- #
+
+```{r}
+irradiance_data <- read.csv("../output_for_plotting/_irradiance_simulated_.csv")
+```
+
+
+```{r, fig.width=10, fig.height=6}
+
+Light <- irradiance_data[,2:92] # first column of irradiance_data contains numbering
+
+col = as.character(palette.colors(10,"tableau 10"))
+
+p_irradiance <- ggplot(data = Light, mapping = aes(x = seq(1, timelen, 1))) +
+  
+  # Adjust line thickness here (changed size from 0.7 to 1.5) --- to add the legend just remove this" show.legend = FALSE"  or  make it =TRUE
+  geom_line(mapping = aes(y = Light[,1], color = "0"), size = 1.0, show.legend = FALSE) +
+  geom_line(mapping = aes(y = Light[,11], color = "10"), size = 1.0, show.legend = FALSE) +
+  geom_line(mapping = aes(y = Light[,21], color = "20"), size = 1.0, show.legend = FALSE) +
+  geom_line(mapping = aes(y = Light[,31], color = "30"), size = 1.0, show.legend = FALSE) +
+  geom_line(mapping = aes(y = Light[,41], color = "40"), size = 1.0, show.legend = FALSE) +
+  geom_line(mapping = aes(y = Light[,51], color = "50"), size = 1.0, show.legend = FALSE) +
+  geom_line(mapping = aes(y = Light[,61], color = "60"), size = 1.0, show.legend = FALSE) +
+  geom_line(mapping = aes(y = Light[,71], color = "70"), size = 1.0, show.legend = FALSE) +
+  geom_line(mapping = aes(y = Light[,81], color = "80"), size = 1.0, show.legend = FALSE) +
+  geom_line(mapping = aes(y = Light[,91], color = "90"), size = 1.0, show.legend = FALSE) +
+  
+   # Adjusting legend labels
+  scale_color_manual("",
+                     values = c('0' = col[1],
+                                '10' = col[2],
+                                '20' = col[3],
+                                '30' = col[4],
+                                '40' = col[5],
+                                '50' = col[6],
+                                '60' = col[7],
+                                '70' = col[8],
+                                '80' = col[9],
+                                '90' = col[10]),
+                     labels = c('0' = "0",
+                                '10' = "10",
+                                '20' = "20",
+                                '30' = "30",
+                                '40' = "40",
+                                '50' = "50",
+                                '60' = "60",
+                                '70' = "70",
+                                '80' = "80",
+                                '90' = "90")) +
+
+  # Adding text annotations at the end of each line
+  annotate("text", x = 365, y = Light[nrow(Light), 1], label = "0", vjust = 1.5, color = col[1]) +
+  annotate("text", x = 365, y = Light[nrow(Light), 7], label = "10", vjust = 1.5, color = col[2]) +
+  annotate("text", x = 365, y = Light[nrow(Light), 17], label = "20", vjust = 1.5, color = col[3]) +
+  annotate("text", x = 365, y = Light[nrow(Light), 27], label = "30", vjust = 1.5, color = col[4]) +
+  annotate("text", x = 365, y = Light[nrow(Light), 37], label = "40", vjust = 1.5, color = col[5]) +
+  annotate("text", x = 365, y = Light[nrow(Light), 47], label = "50", vjust = 1.5, color = col[6]) +
+  annotate("text", x = 365, y = Light[nrow(Light), 57], label = "60", vjust = 1.5, color = col[7]) +
+  annotate("text", x = 325, y = Light[nrow(Light), 67], label = "70", vjust = 1.5, color = col[8]) +
+  annotate("text", x = 289, y = Light[nrow(Light), 67], label = "80", vjust = 1.5, color = col[9]) +
+  annotate("text", x = 365, y = Light[nrow(Light), 61.5], label = "90", vjust = 1.5, color = col[10])+
+
+  
+  scale_x_continuous(breaks = seq(0, 365, 30), name = "Day")+
+  scale_y_continuous(breaks = seq(0, 1000, 50), name = expression(atop("Irradiance", "[μmol m"^"-2"~"s"^"-1"~"]")))+
+  theme_classic()+
+  theme(axis.title.y = element_text(angle=90, size =12),
+        axis.title.x = element_text(size =12),
+        panel.grid.major = element_line(color = "gray", linetype = "solid"))
+
+p_irradiance
+
+```
+```{r}
+
+## Save the plot as PDF using ggsave with adjusted width and height
+
+# pdf("FIGURE_S1_CORAL_PAPER.pdf", width = 10, height = 10)
+# print(p_irradiance)
+# dev.off()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

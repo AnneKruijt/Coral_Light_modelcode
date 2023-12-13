@@ -1,0 +1,116 @@
+---
+title: "FOR_PAPER_plotting_figureS3_darkdays"
+author: "Anne Kruijt"
+date: '2023-11-06'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggpubr)
+library(ggplot2)
+library(reshape2)
+library(grid)
+library(dplyr)
+library(rioja)
+```
+
+# reading in the file
+```{r }
+
+df_darkdays <- read.csv("../output_for_plotting/_Darkdays_simulated_Ek50_.csv")
+
+```
+
+# Plotting darkdays under different threshold scenarios
+
+```{r }
+
+## Define color mapping
+
+num_colors <- 11   # one color for each threshold setting
+
+# Generate the color mapping
+color_mapping <- data.frame(
+  color = hcl.colors(num_colors, "Zissou 1"),
+  stringsAsFactors = FALSE
+)
+
+
+## naming column of the df
+colnames(df_darkdays) <- c('nr', '10','20', '50', '100', '105', '150', '200', '250', '300', '350', '400', 'latitude')
+
+# creating a dataframe with x and y coordinates of points to be plotted in the graph. Points indicate the number of darkdays at 50 degrees latitude for each threshold setting
+points <- df_darkdays[df_darkdays$latitude ==50,] # selecting the darkday counts for 50degrees latitude
+points <- points[,1:(length(points)-1)] # selecting just the counts, without rest of df structure
+
+# Extract the subset of points for 50 degrees latitude (excluding the 'nr' column)
+points <- df_darkdays[df_darkdays$latitude == 50, -1]
+
+# Exclude the first 4 entries from the points dataframe where darkdays are 0
+points_to_exclude <- colSums(points == 0) > 0
+points <- points[, !points_to_exclude]
+
+# Reshape the points dataframe into a suitable format for plotting
+points_melted <- melt(points)
+points_melted$x <- rep(50, nrow(points_melted))  # Add x-coordinate
+points_melted$y <- points_melted$value  # Add y-coordinate
+
+
+## interpolating between values to get smooth lines
+
+spec <- df_darkdays[,2:13]
+columns <- df_darkdays$latitude
+
+# interpolate new dataset to every 0.01 degree, for smoother lines
+# using default method (linear)
+x.new <- seq(0, 90, by=0.01) # latitudes with new resolution
+interpolated_data <- interp.dataset(y=spec, x = columns, xout=x.new)
+colnames(interpolated_data) <- c( '10','20', '50', '100', '105', '150', '200', '250', '300', '350', '400', 'latitude')
+df <- as.data.frame(interpolated_data)
+df_long_darkdays <- melt(df , id.vars = "latitude", measure.vars = c( '10','20', '50', '100', '105', '150', '200', '250', '300', '350', '400'))
+
+
+
+## Plot
+plot <- ggplot(data = df_long_darkdays, aes(x = latitude, y = value, color = variable)) +
+  geom_line(size = 1.) +
+  geom_point(data = points_melted[!(points_melted$x == 50 & points_melted$y == 50), ], aes(x = x, y = y), color = 'black', size = 1.5) +  
+  geom_text(data = points_melted[!(points_melted$x == 50 & points_melted$y == 50), ], aes(x = x, y = y, label = as.character(y)), color = 'black', vjust = -0.5, size = 10/.pt) +  # excluding point 50,50 , since that was an artefact of the df creation and not a meaningful point
+  scale_color_manual(values = color_mapping$color) +
+  labs(color = bquote(E[lim]) ) + 
+  scale_x_continuous(breaks = seq(0, 90, 10), name = "Latitude") +
+  scale_y_continuous(breaks = seq(0, 365, 15), name = "Dark days") +
+  theme_classic() +  
+  theme(legend.position = c(.15, .95),
+    legend.justification = c("right", "top"),
+    legend.box.just = "right",
+    legend.margin = margin(6, 6, 6, 6),
+    legend.text = element_text(size =10),
+    legend.title = element_text(size =12),
+    
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text = element_text(size = 10),
+        panel.grid.major = element_line(color = "gray", linetype = "solid")) 
+
+final_plot_S3 <- plot + theme(axis.title.y = element_text(angle = 90, vjust = 0.5)) 
+final_plot_S3
+
+```
+```{r}
+
+# Save the plot as PDF using ggsave with adjusted width and height
+#pdf("FIGURE_S3_CORAL_PAPER.pdf", width = 10, height = 10)
+#print(final_plot_S3)
+#dev.off()
+
+```
+
+
+
+
+

@@ -1,0 +1,232 @@
+---
+title: "Master_script_coral_calcification"
+author: "Anne Kruijt"
+date: '2023-04-04'
+output: html_document
+---
+
+# TOPIC OF THE STUDY: 
+# CORAL CALCIFICATION WITH LATITUDE: A STUDY ON THE INTERPLAY BETWEEN TEMPERATURE AND LIGHT LIMITATION
+The simple box model of coral reef calcification we developed, enables us to investigate the latitudinal limits to coral reef occurrences in a high temperature world, by calculating potential calcification rates under different irradiance and temperature scenarios. 
+
+# HOW THE CODE WORKS
+We split up the code into different parts: 
+- the settings script contains prescribed parameters that are constant throughout all model simulations
+- the functions script contains all functions developed for these simulations
+- the wrapped function script is essentially the model simulation itself, in the form of a function: it contains one large function that combines all smaller functions and in which several calculations are performed, leading to results stored in different formats, to be processed and plotted in another script
+- the master script (THIS FILE) is where all actions take place: 
+--> the above mentioned other scripts are loaded
+--> temperature data used for the simulation are read in
+--> the simulation settings are picked
+--> to test the sensitivity of model results to different parameter settings, a range of settings is tested, in all combinations
+--> output of the simulations comes in a large data frame that also contains the settings used for the end result. These results are extracted from the data frame and saved as csv files. These files are read in and plotted in different scripts; one for each figure in the paper.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+# Load the relevant packages
+
+library(here)
+library(ggplot2)
+library(tidyverse)
+library(readr)
+library(patchwork)
+library(matrixStats)
+library(grid)
+library(seacarb)
+library(pracma)
+library(reshape2)
+library(rootSolve)
+library(deSolve)
+
+```
+
+
+```{r } 
+#Scripts to be used in current script
+
+source("SETTINGS_script_coral_calcification.R")
+source("FUNCTIONS_script_coral_calcification.R")
+source("WRAPPEDFUNCTION_coral_calcification.R")
+source("TEMPERATURE_scenario_creation.R")
+
+```
+
+# Descriptions of all runs performed:
+The model runs performed to produce the figures that are discussed in the main text of the paper:
+
+For comparison of the different temperature scenarios (figure 2 paper):
+- TscenariosT3minM and TscenariosT3maxM, Tcurve_scenarios0 and kpar = 0.05 ; Ek = 50 ; darkday_tolerance = 26, 365 ; threshold_scenario = 20 ; with Tboundary_high in the settings script set to 36
+- TscenariosT6minM and TscenariosT6maxM, Tcurve_scenarios0 and kpar = 0.05 ; Ek = 50 ; darkday_tolerance = 26, 365 ; threshold_scenario = 20; with Tboundary_high in the settings script set to 36 and to 50
+- TscenariosT9minM and TscenariosT9maxM, Tcurve_scenarios0 and kpar = 0.05 ; Ek = 50 ; darkday_tolerance = 26, 365 ; threshold_scenario = 20 ; with Tboundary_high in the settings script set to 36 and to 50
+- Tscenario_modernminM and Tscenario_modernmaxM, Tcurve_scenarios0 and kpar = 0.05 ; Ek = 50 ; darkday_tolerance = 26, 365 ; threshold_scenario = 20 ; with Tboundary_high in the settings script set to 36
+
+
+For the irradiance curves (figure S1):
+- any simulation can be used, irradiance at surface is the same in every simulation
+
+For testing the sensitivity to kpar and Ek (figure S2 paper):
+- Tscenario_stable with kpar = 0.01, 0.05, 0.1, 0.2 and Ek = 50, 100, 150, 200, 300
+
+For number of dark days versus threshold scenarios (figure S3 paper):
+- any temperature scenario
+- Ek = 50, kpar =0.05, dark day scenario = 365, threshold_scenario = 10, 20, 50, 100, 105, 150, 200, 250, 300, 350, 400)
+
+
+```{r}
+#---------- Temperature simulation settings ---------------------#
+
+# constant temperature across globe, for light-sensitivity tests
+Tscenario_stable <- c( 'Tstable' = list( rep(Topt_high, length(Tempx3MinM_NH) ) ) )
+
+# daily temperature with latitude
+TscenariosT3D <- c('T3D'= list(temp3x_interpolated_D_NH))
+TscenariosT6D <- c('T6D'= list(temp6x_interpolated_D_NH))
+TscenariosT9D <- c('T9D'= list(temp9x_interpolated_D_NH))
+Tscenario_modernD <- c('TmodernD' = list(ModernSST_D_NH))
+
+# yearly monthly mimimum temperature with latitude
+TscenariosT3minM <- c('T3MinM'= list(Tempx3MinM_NH))
+TscenariosT6minM <- c('T6MinM'= list(Tempx6MinM_NH))
+TscenariosT9minM <- c('T9MinM'= list(Tempx9MinM_NH))
+Tscenario_modernminM <- c('TmodernMin' = list(TempModernMinM_NH))
+
+# yearly monthly maximum temperature with latitude
+TscenariosT3maxM <- c('T3MaxM'= list(Tempx3MaxM_NH))
+TscenariosT6maxM <- c('T6MaxM'= list(Tempx6MaxM_NH))
+TscenariosT9maxM <- c('T9MaxM'= list(Tempx9MaxM_NH))
+Tscenario_modernmaxM <- c('TmodernMax' = list(TempModernMaxM_NH))
+
+# yearly winter (mean over 3 months) temperature with latitude
+TscenariosT3winter <- c('T3winter'= list(Tempx3winter_NH))
+TscenariosT6winter<- c('T6winter'= list(Tempx6winter_NH))
+TscenariosT9winter<- c('T9winter'= list(Tempx9winter_NH))
+Tscenario_modern_winter <- c('Tmodern_winter' = list(TempModern_winter_NH))
+
+# function describing the calcification-temperature dependence
+Tcurve_scenarios0 <- c("ft0" = f_temp_block)
+
+
+# parameters used in the calcification-light dependence function
+kpar_scenarios <- c("kpar0.05" = 0.05) #"kpar0.01"= 0.01,  "kpar0.1" = 0.1, "kpar0.2" = 0.2) 
+Ek_scenarios <- c("Ek1" = 50) #, "Ek2"= 100, "EK3" = 150, "Ek4" = 200, "Ek5" = 300) 
+darkdaytolerance_scenario <- c('dd1' = 26, "dd2"= 365) #7, "dd2"= 14, "dd3" = 30, "dd4" = 365, "dd5" = 210, "dd6" = 365)
+threshold_scenario <- c("thresh1" = 10 , "thresh2" = 20, "thresh3" = 50, "thresh4" = 100 ,'thresh4b' =105, "thresh5" = 150, "thresh6" =200, "thresh7" = 250, "thresh8"= 300, "thresh9"= 350, "thresh10"= 400) # minimum light per day in umol/m2/s
+```
+# The different scenarios are combined into tibbles
+
+A tibble is a table format structured in such a way that there is a row for each combination of the given variables
+We chose not to make one large tibble, but to make a separate tibble for each temperature and temperature dependence regime. This way we can do subsequent computations for each temperature regime separately, instead of running the simulations for ALL combinations of parameters and temperature regimes at once (which would take long and result in one very large output table, which is slow to load and complicated to navigate)
+
+```{r}
+
+#--------- Choose the temperature scenario settings ---------:
+# naming the scenario that is being run, to be used in the naming of the resulting csv file
+TSET <- "T9" # T3, T9, Tstable, Tmodern
+FTSET <- "f0" 
+MAXT <- "MAXT50"
+
+print("Have you changed the scenarios below TSET accordingly?")
+
+# selecting the scenarios to use (check that you changed names above to fit the scenarios selected)
+t1 <- TscenariosT9minM 
+t2 <- TscenariosT9maxM
+tcurve <- Tcurve_scenarios0
+
+```
+
+```{r}
+
+#---------- Simulation -----------------------------------#
+
+# Below we create a tibble
+tibbled_settings <- tibble(
+  expand.grid(ddt = darkdaytolerance_scenario, kpar = kpar_scenarios, Ek = Ek_scenarios, threshold = threshold_scenario, tcurve = tcurve, tcold = t1, twarm = t2)
+)
+
+
+# Perform the model simulation on the tibble
+results <- tibbled_settings |>
+  mutate(out = pmap(list( ddt, kpar, Ek, threshold, tcurve, tcold, twarm), Model_simulation ))
+
+```
+
+```{r}
+#------ Extracting data -------------------#
+
+# Irradiance data (same for every model run, so we take the first row of the simulation)
+unnesteddata <- results[1,] |> unnest_longer(out) 
+Irradiance_simulated <- unnesteddata$out$Esurf
+
+
+#--------------------------------------------------------------------#
+
+# Settings for which we filter the data; creating data frames that contain results of those simulations performed with the settings of interest 
+
+kpar_setting <- 0.05
+Ek_setting <- 50
+ddt_setting <- 365 
+threshold_setting <- 20
+
+Output_kpar_var <- results[results$ddt == ddt_setting & results$Ek == Ek_setting & results$threshold == threshold_setting,] |> unnest_longer(out)
+CalcYear_kpar_var <- Output_kpar_var[names(Output_kpar_var$out) == "calc_reef_year",]
+CalcReef_kpar_var <- Output_kpar_var[names(Output_kpar_var$out) == "calc_reef",]
+
+Output_Ek_var <- results[results$ddt == ddt_setting & results$kpar == kpar_setting & results$threshold == threshold_setting,] |> unnest_longer(out)
+CalcYear_Ek_var <- Output_Ek_var[names(Output_Ek_var$out) == "calc_reef_year",]
+CalcReef_Ek_var<- Output_Ek_var[names(Output_Ek_var$out) == "calc_reef",]
+
+Output_ddt_var <- results[results$kpar == kpar_setting & results$Ek == Ek_setting & results$threshold == threshold_setting,] |> unnest_longer(out)
+CalcYear_ddt_var <- Output_ddt_var[names(Output_ddt_var$out) == "calc_reef_year",]
+CalcReef_ddt_var <- Output_ddt_var[names(Output_ddt_var$out) == "calc_reef",]
+CalcYear_nolightlim <- Output_ddt_var[names(Output_ddt_var$out) == "calc_reef_year_nolightlim",]
+
+#------- extracting dark day data, for different combinations of threshold and Ek , only works for run with all thresholds ------#
+
+Output_Ek_TH_var <- results[results$ddt == ddt_setting & results$kpar == kpar_setting,] |> unnest_longer(out)
+Darkdays_var <- Output_Ek_TH_var[names(Output_Ek_TH_var$out) == "darkdays",] 
+
+darkdays_Ek50 <- Darkdays_var[Darkdays_var$Ek == Ek_setting,]$out
+df_darkdays_Ek50<- as.data.frame(do.call(cbind, darkdays_Ek50))
+colnames(df_darkdays_Ek50) <- c('10', '20','50', '100', "105", '150', '200', '250', '300', '350', '400')
+df_darkdays_Ek50 <- cbind(df_darkdays_Ek50, latitude = lats)
+
+#------ selection of calcification data in high threshold runs----#
+
+threshold_high <- 105
+Output_ddt_var_thresh_high <- results[results$kpar == kpar_setting & results$Ek == Ek_setting & results$threshold == threshold_high,] |> unnest_longer(out)
+CalcYear_ddt_var_thresh_high <- Output_ddt_var_thresh_high[names(Output_ddt_var$out) == "calc_reef_year",]
+CalcYear_nolightlim_thresh_high <- Output_ddt_var_thresh_high[names(Output_ddt_var$out) == "calc_reef_year_nolightlim",]
+
+
+print("Now write to file")
+```
+
+```{r}
+
+# Write to file
+
+filelocation <- "../model_output/" # name of your folder here
+
+write.csv(CalcYear_kpar_var$out, paste(filelocation, TSET, FTSET,MAXT, "kparVar","CalcYear", ".csv", sep = "_"))
+write.csv(CalcYear_Ek_var$out, paste(filelocation, TSET, FTSET, MAXT, "EkVar", "CalcYear", ".csv", sep = "_"))
+write.csv(CalcYear_ddt_var$out, paste(filelocation,  TSET, FTSET,MAXT,"ddtVar", "CalcYear", ".csv", sep = "_"))
+write.csv(CalcYear_nolightlim$out, paste(filelocation,  TSET, FTSET, MAXT, "No-light-lim","CalcYear",".csv", sep = "_"))
+write.csv(CalcYear_ddt_var_thresh_high$out, paste(filelocation,  TSET, FTSET, MAXT, "ddtVar","thresh_high", "CalcYear", ".csv", sep = "_"))
+write.csv(CalcYear_nolightlim_thresh_high$out, paste(filelocation, TSET, FTSET, "No-light-lim", "thresh_high","CalcYear",".csv", sep = "_"))
+
+write.csv(Irradiance_simulated, paste(filelocation, "Irradiance_simulated",".csv", sep = "_" ))
+write.csv(df_darkdays_Ek50, paste(filelocation, "Darkdays_simulated_Ek50",".csv", sep = "_" ))
+
+
+
+# # We do not perform any analysis on daily calcification rates so these files below are not needed
+# write.csv(CalcReef_kpar_var$out, paste(filelocation, "CalcReef", TSET, FTSET,MAXT, "kparVar", ".csv", sep = "_") )
+# write.csv(CalcReef_Ek_var$out, paste(filelocation, "CalcReef", TSET, FTSET, MAXT, "EkVar", ".csv", sep = "_"))
+# write.csv(CalcReef_ddt_var$out, paste(filelocation, "CalcReef", TSET, FTSET,MAXT, "ddtVar",".csv", sep = "_"))
+```

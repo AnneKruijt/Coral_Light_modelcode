@@ -1,0 +1,158 @@
+---
+title: "FOR_PAPER_plotting_figureS2_kparEk"
+author: "Anne Kruijt"
+date: '2023-11-06'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggpubr)
+library(ggplot2)
+library(reshape2)
+library(grid)
+library(dplyr)
+```
+
+
+```{r}
+# scripts containing general functions and settings
+
+source("SETTINGS_script_coral_calcification.R")
+source("FUNCTIONS_script_coral_calcification.R")
+
+```
+
+# reading in the data from files
+```{r}
+  
+data_Tstable_kparvar <- read.csv("../output_for_plotting/_Tstable_f0_MAXT50_kparVar_CalcYear_.csv")
+data_Tstable_Ekvar <- read.csv("../output_for_plotting/_Tstable_f0_MAXT50_EkVar_CalcYear_.csv")
+
+```
+
+
+```{r, fig.width=10, fig.height=6}
+
+#-------- setting the data to be plotted ---------# 
+namescolumns_kpar <- c("0.01", "0.05", "0.1", "0.5", "latitude")
+namescolumns_Ek <- c("50", "100", "150", "200", "300", "latitude")
+df_kpar <- data_Tstable_kparvar   
+df_Ek <- data_Tstable_Ekvar
+
+#----- converting it to right format ----- #
+
+df_kpar <- df_kpar[, 2:length(df_kpar)]
+df_kpar <- scaling(df_kpar)
+df_Ek <- df_Ek[, 2:length(df_Ek)]
+df_Ek <- scaling(df_Ek)
+
+# adding column with latitudes related to the model output values
+dfEk <- cbind(df_Ek, latitude = lats) 
+dfkpar <- cbind(df_kpar, latitude = lats )
+
+# giving meaningful names to the columns
+for (i in 1: length(dfEk)){
+  colnames(dfEk)[i] <- namescolumns_Ek[i] 
+}
+for (i in 1: length(dfkpar)){
+  colnames(dfkpar)[i] <- namescolumns_kpar[i] 
+}
+
+# changing dataframe to long format, for plotting
+df_longEk <- melt(dfEk , id = "latitude" )
+df_longkpar <- melt(dfkpar , id = "latitude" )
+
+
+
+#--------------------- Plotting ---------------------------#
+p_yearlycalcification_kpar <- ggplot(data = df_longkpar, aes(x = latitude, y = value, color = variable)) +
+  geom_line(size = 1, show.legend = FALSE) +
+  scale_x_continuous(breaks = seq(0, 90, 10)) +
+  scale_y_continuous(breaks = seq(0, 100, 10), name = "") +
+  theme_classic()+
+  theme(
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    panel.grid.major = element_line(color = "gray", linetype = "solid"))
+
+p_yearlycalcification_Ek <- ggplot(data = df_longEk, aes(x = latitude, y = value, color = variable)) +
+  geom_line(size = 1, show.legend = FALSE) +
+  scale_x_continuous(breaks = seq(0, 90, 10)) +
+  scale_y_continuous(breaks = seq(0, 100, 10), name = "") +
+  theme_classic()+
+  theme(
+    axis.title.y = element_blank(),
+    axis.title.x = element_text(margin = margin(t = 10), size = 12),
+    panel.grid.major = element_line(color = "gray", linetype = "solid"))
+
+
+# Labels to be added next to lines in the visualizations with colorblindness-proof colors
+label_data_kpar <- df_longkpar %>%
+  group_by(variable) %>%
+  summarize(latitude = 60, value = (df_longkpar$value[df_longkpar$latitude == 60 & df_longkpar$variable == variable]+ 3))
+  # --> picked a good location within plot ( x-coord at latitude 60 and y-coord value+3, so text doesnt overlap with lines too much)
+
+label_data_Ek <- df_longEk %>%
+  group_by(variable) %>%
+  summarize(latitude = 60, value = (df_longEk$value[df_longEk$latitude == 60 & df_longEk$variable == variable] + 3 ))
+
+# Color scale for the two plots
+colkpar = rev(hcl.colors(4, "Zissou 1"))
+colEk =  rev(hcl.colors(5, "Zissou 1"))
+
+# arranging the two plots together and annotating the plots
+p_kpar_Ek <- ggarrange(
+  annotate_figure(
+    p_yearlycalcification_kpar + 
+      geom_text(data = label_data_kpar, aes(x = latitude, y = value, label = variable, color = variable), 
+                vjust = 0.5, hjust = -0.1, size = 10/.pt, show.legend = FALSE) +
+      annotate(geom="text", x=75, y=85, label=  "kpar", size = 12/.pt) +
+      #https://stackoverflow.com/questions/65076492/ggplot-size-of-annotate-vs-size-of-element-text : read this info: I added /.pt to make the annotations match the axis text
+      scale_color_manual(values = colkpar) +
+     theme_classic()+
+  theme(
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    panel.grid.major = element_line(color = "gray", linetype = "solid"),
+        legend.key = element_blank()  # Remove legend key shapes
+      ),
+    
+  ),
+  annotate_figure(
+    p_yearlycalcification_Ek + 
+      geom_text(data = label_data_Ek, aes(x = latitude, y = value, label = variable, color = variable), 
+                vjust = -0.2, hjust = -0.1, size = 10/.pt, show.legend = FALSE) +
+      annotate(geom="text", x=75, y=85, label=  expression("Ek [μmol m"^"-2"~"s"^"-1"~"]"), size = 12/.pt) +
+      scale_color_manual(values = colEk) +
+      theme_classic()+
+  theme(
+    axis.title.y = element_blank(),
+    axis.title.x = element_text(margin = margin(t = 10), size = 12),
+    panel.grid.major = element_line(color = "gray", linetype = "solid"),
+        legend.key = element_blank()  # Remove legend key shapes
+      )
+  ),
+  heights = c(100, 120), ncol = 1, align = "v"
+)
+
+# adding y-axis label for both plots combined
+plot_final <- annotate_figure(p_kpar_Ek, left = text_grob("% of maximum calcification",size = 12, color = "black", rot = 90) )
+
+plot_final
+
+```
+```{r}
+## Save the plot as PDF with adjusted width and height
+
+#pdf("FIGURE_S2_CORAL_PAPER.pdf", width = 10, height = 10)
+#print(plot_final)
+#dev.off()
+
+```
+
+
+
