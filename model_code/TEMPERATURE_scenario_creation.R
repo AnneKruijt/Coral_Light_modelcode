@@ -9,9 +9,6 @@
 #-----------------------------------------------------------------------#
 #  To be used in the master coral calcification script
 
-file_location <- dirname(rstudioapi::getSourceEditorContext()$path)
-setwd(file_location)
-
 library(here)
 
 source("FUNCTIONS_script_coral_calcification.R")
@@ -22,9 +19,9 @@ source("FUNCTIONS_script_coral_calcification.R")
 # Simulation of Eocene extreme warmth and high climate sensitivity through cloud feedbacks. 
 # Science Advances, 5(9). https://doi.org/10.1126/sciadv.aax1874
 
-CESM_temperature_data3x_monthly <- read.csv("../data_files/SST_monthly_3x.csv") 
-CESM_temperature_data6x_monthly <- read.csv("../data_files/SST_monthly_6x.csv")
-CESM_temperature_data9x_monthly <- read.csv("../data_files/SST_monthly_9x.csv")
+CESM_temperature_data3x_monthly <- read.csv("./data_files/SST_monthly_3x.csv") 
+CESM_temperature_data6x_monthly <- read.csv("./data_files/SST_monthly_6x.csv")
+CESM_temperature_data9x_monthly <- read.csv("./data_files/SST_monthly_9x.csv")
 
 CESM_latitudes <- seq(90,-90, length.out = length(CESM_temperature_data3x_monthly[,2])) # resolution of CESM is 2.5 degrees
 
@@ -148,7 +145,7 @@ Tempx9winter <- array(, dim = c(181))
 TempModern_winter  <- array(, dim = c(181))
 
 
-Tempx3winter[11:89] <- rowMeans(subset((temp3x_interpolated_M[11:89,]), select = c(9,10,11))) # coldest SST months SH (August, September, Oktober)
+Tempx3winter[11:89] <- rowMeans(subset((temp3x_interpolated_M[11:89,]), select = c(9,10,11))) # coldest SST months SH (August, September, October)
 Tempx3winter[90:181] <- rowMeans(subset((temp3x_interpolated_M[90:181,]), select = c(3,4,5))) # coldest SST months NH (February, March, April)
 Tempx6winter[11:89] <- rowMeans(subset((temp6x_interpolated_M[11:89,]), select = c(9,10,11)))
 Tempx6winter[90:181] <- rowMeans(subset((temp6x_interpolated_M[90:181,]), select = c(3,4,5)))
@@ -166,13 +163,13 @@ TempModern_winter_NH <- TempModern_winter[90:181]
 
 #------ writing to file (only those files used for plotting in figure 1 of the paper) --------#
 
-write.csv(Tempx3MinM, paste("../model_output/", "Tempx3MinM", ".csv", sep = ""))
-write.csv(Tempx6MinM, paste("../model_output/", "Tempx6MinM", ".csv", sep = ""))
-write.csv(Tempx9MinM, paste("../model_output/", "Tempx9MinM", ".csv", sep = ""))
-write.csv(TempModernMinM, paste("../model_output/", "TempModernMinM", ".csv", sep = ""))
+write.csv(Tempx3MinM, paste("./model_output/", "Tempx3MinM", ".csv", sep = ""))
+write.csv(Tempx6MinM, paste("./model_output/", "Tempx6MinM", ".csv", sep = ""))
+write.csv(Tempx9MinM, paste("./model_output/", "Tempx9MinM", ".csv", sep = ""))
+write.csv(TempModernMinM, paste("./model_output/", "TempModernMinM", ".csv", sep = ""))
 
 
-write.csv(Tempx3MaxM, paste("../model_output/", "Tempx3MaxM", ".csv", sep = ""))
-write.csv(Tempx6MaxM, paste("../model_output/", "Tempx6MaxM", ".csv", sep = ""))
-write.csv(Tempx9MaxM, paste("../model_output/", "Tempx9MaxM", ".csv", sep = ""))
-write.csv(TempModernMaxM, paste("../model_output/", "TempModernMaxM", ".csv", sep = ""))
+write.csv(Tempx3MaxM, paste("./model_output/", "Tempx3MaxM", ".csv", sep = ""))
+write.csv(Tempx6MaxM, paste("./model_output/", "Tempx6MaxM", ".csv", sep = ""))
+write.csv(Tempx9MaxM, paste("./model_output/", "Tempx9MaxM", ".csv", sep = ""))
+write.csv(TempModernMaxM, paste("./model_output/", "TempModernMaxM", ".csv", sep = ""))

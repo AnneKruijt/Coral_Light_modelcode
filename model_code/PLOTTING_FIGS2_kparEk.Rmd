@@ -29,8 +29,8 @@ source("FUNCTIONS_script_coral_calcification.R")
 # reading in the data from files
 ```{r}
   
-data_Tstable_kparvar <- read.csv("../output_for_plotting/_Tstable_f0_MAXT50_kparVar_CalcYear_.csv")
-data_Tstable_Ekvar <- read.csv("../output_for_plotting/_Tstable_f0_MAXT50_EkVar_CalcYear_.csv")
+data_Tstable_kparvar <- read.csv("./output_for_plotting/_Tstable_f0_MAXT50_kparVar_CalcYear_.csv")
+data_Tstable_Ekvar <- read.csv("./output_for_plotting/_Tstable_f0_MAXT50_EkVar_CalcYear_.csv")
 
 ```
 
@@ -145,12 +145,14 @@ plot_final <- annotate_figure(p_kpar_Ek, left = text_grob("% of maximum calcific
 plot_final
 
 ```
+
 ```{r}
 ## Save the plot as PDF with adjusted width and height
-
-#pdf("FIGURE_S2_CORAL_PAPER.pdf", width = 10, height = 10)
-#print(plot_final)
-#dev.off()
+pdfname = "FIGURE_S2_CORAL_PAPER"
+fullpdfname = paste0("./figures/", pdfname,".pdf")
+pdf(fullpdfname, width = 10, height = 10)
+print(plot_final)
+dev.off()
 
 ```
 

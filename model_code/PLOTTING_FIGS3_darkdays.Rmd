@@ -21,7 +21,7 @@ library(rioja)
 # reading in the file
 ```{r }
 
-df_darkdays <- read.csv("../output_for_plotting/_Darkdays_simulated_Ek50_.csv")
+df_darkdays <- read.csv("./output_for_plotting/_Darkdays_simulated_Ek50_.csv")
 
 ```
 
@@ -101,12 +101,15 @@ final_plot_S3 <- plot + theme(axis.title.y = element_text(angle = 90, vjust = 0.
 final_plot_S3
 
 ```
+
 ```{r}
 
 # Save the plot as PDF using ggsave with adjusted width and height
-#pdf("FIGURE_S3_CORAL_PAPER.pdf", width = 10, height = 10)
-#print(final_plot_S3)
-#dev.off()
+pdfname = "FIGURE_S3_CORAL_PAPER"
+fullpdfname = paste0("./figures/", pdfname,".pdf")
+pdf(fullpdfname, width = 10, height = 10)
+print(final_plot_S3)
+dev.off()
 
 ```
 

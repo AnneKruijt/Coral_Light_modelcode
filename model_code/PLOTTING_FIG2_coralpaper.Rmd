@@ -26,26 +26,26 @@ source("FUNCTIONS_script_coral_calcification.R")
 ```{r}
 #----- Reading in files------------------------------------------------#
 filelocation <- "./model_output/"
-data_Tmodern_t0_ddtvar <- read.csv("../output_for_plotting/_Tmodern_f0_MAXT36_ddtVar_CalcYear_.csv")
+data_Tmodern_t0_ddtvar <- read.csv("./output_for_plotting/_Tmodern_f0_MAXT36_ddtVar_CalcYear_.csv")
 
-data_T3_t0_ddtvar <- read.csv("../output_for_plotting/_T3_f0_MAXT36_ddtVar_CalcYear_.csv")
+data_T3_t0_ddtvar <- read.csv("./output_for_plotting/_T3_f0_MAXT36_ddtVar_CalcYear_.csv")
 
-data_T6_t0_ddtvar <- read.csv("../output_for_plotting/_T6_f0_MAXT36_ddtVar_CalcYear_.csv")
+data_T6_t0_ddtvar <- read.csv("./output_for_plotting/_T6_f0_MAXT36_ddtVar_CalcYear_.csv")
 
-data_T6_t0_ddtvar_thresh_high <- read.csv("../output_for_plotting/_T6_f0_MAXT36_ddtVar_thresh_high_CalcYear_.csv")
+data_T6_t0_ddtvar_thresh_high <- read.csv("./output_for_plotting/_T6_f0_MAXT36_ddtVar_thresh_high_CalcYear_.csv")
 
-data_T6_t0_ddtvarUnlimMaxT <- read.csv("../output_for_plotting/_T6_f0_MAXT50_ddtVar_CalcYear_.csv")
+data_T6_t0_ddtvarUnlimMaxT <- read.csv("./output_for_plotting/_T6_f0_MAXT50_ddtVar_CalcYear_.csv")
 
-data_T6_t0_ddtvarUnlimMaxT_thresh_high <- read.csv("../output_for_plotting/_T6_f0_MAXT50_ddtVar_thresh_high_CalcYear_.csv")
+data_T6_t0_ddtvarUnlimMaxT_thresh_high <- read.csv("./output_for_plotting/_T6_f0_MAXT50_ddtVar_thresh_high_CalcYear_.csv")
 
 
-data_T9_t0_ddtvar <- read.csv("../output_for_plotting/_T9_f0_MAXT36_ddtVar_CalcYear_.csv")
+data_T9_t0_ddtvar <- read.csv("./output_for_plotting/_T9_f0_MAXT36_ddtVar_CalcYear_.csv")
 
-data_T9_t0_ddtvar_thresh_high <- read.csv("../output_for_plotting/_T9_f0_MAXT36_ddtVar_thresh_high_CalcYear_.csv")
+data_T9_t0_ddtvar_thresh_high <- read.csv("./output_for_plotting/_T9_f0_MAXT36_ddtVar_thresh_high_CalcYear_.csv")
 
-data_T9_t0_ddtvarUnlimMaxT <- read.csv("../output_for_plotting/_T9_f0_MAXT50_ddtVar_CalcYear_.csv")
+data_T9_t0_ddtvarUnlimMaxT <- read.csv("./output_for_plotting/_T9_f0_MAXT50_ddtVar_CalcYear_.csv")
 
-data_T9_t0_ddtvarUnlimMaxT_thresh_high <- read.csv("../output_for_plotting/_T9_f0_MAXT50_ddtVar_thresh_high_CalcYear_.csv")
+data_T9_t0_ddtvarUnlimMaxT_thresh_high <- read.csv("./output_for_plotting/_T9_f0_MAXT50_ddtVar_thresh_high_CalcYear_.csv")
 
 ```
 
@@ -232,7 +232,11 @@ p4_with_text_both <- add_text_box_both(p_yearlycalcification4, "x9 CO2", "D")
 
 ## Saving figure as pdf
 
- pdf(file="FIGURE2_CORAL_PAPER.pdf", width = 12, height = 14)
+
+pdfname = "FIGURE2_CORAL_PAPER"
+fullpdfname = paste0("./figures/", pdfname,".pdf")
+
+pdf(file= fullpdfname, width = 12, height = 14)
 
 ## Combine both sets of plots
 combined_plots <- ggarrange(p1_with_text_both, p2_with_text_both, p3_with_text_both, p4_with_text_both,

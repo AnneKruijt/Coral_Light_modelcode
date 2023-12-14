@@ -31,17 +31,17 @@ library(tidyr)
 # reading in reef occurrences table}
 ## data obtained from: Kiessling, W., & Krause, M. C. (2022). PARED - An online database of Phanerozoic reefs. https://www.paleo-reefs.pal.uni-erlangen.de 
 
-LATLON_data <- read.csv("../data_files/Eocene_latlon_corals.csv", sep = ";") # file containing coordinates of the Eocene coral occurrences
+LATLON_data <- read.csv("./data_files/Eocene_latlon_corals.csv", sep = ";") # file containing coordinates of the Eocene coral occurrences
 Yaxis <- rep(1, length(LATLON_data$PALEO.LAT..Scotese.))  # y set to 1, because the y-axis is not meaningful for 'occurrence'
 
 # reading in temperature data
 ## original Eocene temperature data obtained from: Zhu, J., Poulsen, C. J., & Tierney, J. E. (2019). Simulation of Eocene extreme warmth and high climate sensitivity through cloud feedbacks. Science Advances, 5(9). https://doi.org/10.1126/sciadv.aax1874 
 ## original modern temperature data obtained from:
 
-TempModern_to_plot <- read.csv("../data_files/TempModernMinM.csv")
-Tempx3_to_plot <- read.csv("../data_files/Tempx3MinM.csv")
-Tempx6_to_plot <- read.csv("../data_files/Tempx6MinM.csv")
-Tempx9_to_plot <- read.csv("../data_files/Tempx9MinM.csv")
+TempModern_to_plot <- read.csv("./data_files/TempModernMinM.csv")
+Tempx3_to_plot <- read.csv("./data_files/Tempx3MinM.csv")
+Tempx6_to_plot <- read.csv("./data_files/Tempx6MinM.csv")
+Tempx9_to_plot <- read.csv("./data_files/Tempx9MinM.csv")
 
 # making an array of latitudes
 original_latitudes <- seq(-90, 90, length.out = 181)
@@ -139,11 +139,11 @@ plot_fig1
 ```{r }
 ## Saving the figure as a pdf
 
-# pdf("FIGURE1_CORAL_PAPER.pdf", width = 15, height = 10)
-# print(plot_fig1)
-# dev.off()
-
-
+pdfname ="FIGURE1_CORAL_PAPER"
+fullpdfname = paste0("./figures/", pdfname,".pdf")
+pdf(fullpdfname, width = 15, height = 10)
+print(plot_fig1)
+dev.off()
 ```
 
 

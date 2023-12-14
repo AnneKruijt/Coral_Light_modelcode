@@ -211,7 +211,7 @@ print("Now write to file")
 
 # Write to file
 
-filelocation <- "../model_output/" # name of your folder here
+filelocation <- "./model_output/" 
 
 write.csv(CalcYear_kpar_var$out, paste(filelocation, TSET, FTSET,MAXT, "kparVar","CalcYear", ".csv", sep = "_"))
 write.csv(CalcYear_Ek_var$out, paste(filelocation, TSET, FTSET, MAXT, "EkVar", "CalcYear", ".csv", sep = "_"))
