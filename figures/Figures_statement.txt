@@ -1,0 +1,2 @@
+All figures produced with the code in model_code folder are saved to this file. Figures as appearing in the article (Kruijt, A. L., et al 2024, in prep) '
+were made with that code and then edited in illustrator to fit journal standards.
