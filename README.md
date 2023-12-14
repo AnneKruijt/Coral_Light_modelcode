@@ -20,5 +20,9 @@ Installation steps:
 --> r studio:
 
 Running the code:
+To run the code on your own device, dowload the entire repository. To perform the simulations as they were done for the paper, follow the steps in the MASTER_script in the model_code folder. The script reads-in the required temperature data from the data_files folder. Model output is stored in the model_output folder.
+
+(This is not necessary for the simulations but) if you want to download the modern ocean temperature data from NOAA, follow the steps in the ocean_atlas_modernTemp_extraction.R file.
 
 Making the figures:
+To re-do the figures as presented in the paper, the plotting scripts in the model_code folder can be run. These read-in the original model output from the simulations presented in the paper, which are stored in the output_for_plotting folder. 
