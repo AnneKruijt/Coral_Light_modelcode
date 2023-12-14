@@ -25,7 +25,7 @@ source("FUNCTIONS_script_coral_calcification.R")
 
 ```{r}
 #----- Reading in files------------------------------------------------#
-filelocation <- "./model_output/"
+
 data_Tmodern_t0_ddtvar <- read.csv("./output_for_plotting/_Tmodern_f0_MAXT36_ddtVar_CalcYear_.csv")
 
 data_T3_t0_ddtvar <- read.csv("./output_for_plotting/_T3_f0_MAXT36_ddtVar_CalcYear_.csv")
