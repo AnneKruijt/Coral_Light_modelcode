@@ -21,8 +21,8 @@ knitr:: opts_chunk$set(out.width='1000px', dpi=200)
 ```{r}
 # scripts containing general functions and settings
 
-source("SETTINGS_script_coral_calcification.R")
-source("FUNCTIONS_script_coral_calcification.R")
+source("./model_code/SETTINGS_script_coral_calcification.R")
+source("./model_code/FUNCTIONS_script_coral_calcification.R")
 
 ```
 
