@@ -11,7 +11,7 @@
 
 library(here)
 
-source("FUNCTIONS_script_coral_calcification.R")
+source("./model_code/FUNCTIONS_script_coral_calcification.R")
 
 
 # --------- reading in CESM files

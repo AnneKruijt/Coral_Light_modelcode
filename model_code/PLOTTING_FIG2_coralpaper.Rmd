@@ -19,8 +19,8 @@ library(reshape2)
 ```
 
 ```{r}
-source("SETTINGS_script_coral_calcification.R")
-source("FUNCTIONS_script_coral_calcification.R")
+source("./model_code/SETTINGS_script_coral_calcification.R")
+source("./model_code/FUNCTIONS_script_coral_calcification.R")
 ```
 
 ```{r}

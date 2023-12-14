@@ -50,10 +50,10 @@ library(deSolve)
 ```{r } 
 #Scripts to be used in current script
 
-source("SETTINGS_script_coral_calcification.R")
-source("FUNCTIONS_script_coral_calcification.R")
-source("WRAPPEDFUNCTION_coral_calcification.R")
-source("TEMPERATURE_scenario_creation.R")
+source("./model_code/SETTINGS_script_coral_calcification.R")
+source("./model_code/FUNCTIONS_script_coral_calcification.R")
+source("./model_code/WRAPPEDFUNCTION_coral_calcification.R")
+source("./model_code/TEMPERATURE_scenario_creation.R")
 
 ```
 
