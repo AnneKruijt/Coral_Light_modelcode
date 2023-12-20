@@ -30,7 +30,7 @@ CESM_latitudes <- seq(90,-90, length.out = length(CESM_temperature_data3x_monthl
 # reference: 22.	Locarnini, R. A. , Mishonov, A. V., Baranova, O. K., Boyer, T. P., Zweng, M. M., García, H., Reagan, J., Seidov, D., Weathers, K., Paver, C., & Smolyar, I. (2019).
 # World Ocean Atlas 2018, Volume 1: Temperature. (Vol. 1). NOAA Atlas NESDIS.
 
-ModernSST_monthly <- read.csv('../data_files/modern_SST_data_monthly.csv')
+ModernSST_monthly <- read.csv('./data_files/modern_SST_data_monthly.csv')
 ModernSST_monthly[,1] <- seq(-90,90, length.out = length(ModernSST_monthly[,1]))
 
 
