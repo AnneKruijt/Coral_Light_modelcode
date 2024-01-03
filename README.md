@@ -19,6 +19,8 @@ Installation steps:
 --> r markdown: https://rmarkdown.rstudio.com/authoring_quick_tour.html
 --> r studio: https://rstudio-education.github.io/hopr/starting.html
 
+IMPORTANT: In order for the relative path structure in the files to work, the working directory should always be the project. For that, open the project file (.Rproj) and make sure that the rmarkdown files (.Rmd) evaluate chunks in the directory 'project'. These settings can be found under Tools --> Global option --> R Markdown --> Evaluate chunks in directory: (choose 'project')
+
 Running the code:
 To run the code on your own device, dowload the entire repository. To perform the simulations as they were done for the paper, follow the steps in the MASTER_script in the model_code folder. The script reads-in the required temperature data from the data_files folder. Model output is stored in the model_output folder.
 
