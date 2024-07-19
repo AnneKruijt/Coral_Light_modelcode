@@ -1,0 +1,9 @@
+EOCENE CORAL REEF OCCURENCES
+
+File used to plot Eocene coral reef occurences in Fig. 1 of the paper is named 'Eocene_latlon_corals' The file contains just the latitudes and 
+longitudes of each coral, but more data on each occurence can be found in the file ' Eocene_corals_fulldata'. This file also contains a description of
+search terms used in the PARED database from which the coral ocurrences were obtained.
+
+EOCENE TEMPERATURE DATA
+
+Temperature data were derrived...
