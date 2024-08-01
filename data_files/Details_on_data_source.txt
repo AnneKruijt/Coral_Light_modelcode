@@ -1,9 +1,13 @@
 EOCENE CORAL REEF OCCURENCES
-
-File used to plot Eocene coral reef occurences in Fig. 1 of the paper is named 'Eocene_latlon_corals' The file contains just the latitudes and 
-longitudes of each coral, but more data on each occurence can be found in the file ' Eocene_corals_fulldata'. This file also contains a description of
+File used to plot Eocene coral reef occurences in Fig. 1 of the paper is named 'Paleo_coral_reef_latlon.csv' The file contains just the latitudes and 
+longitudes of each coral, but more data on each occurence can be found in the file ' Paleo_coral_reef_data_and_info.xlsx'. This file also contains a description of
 search terms used in the PARED database from which the coral ocurrences were obtained.
 
 EOCENE TEMPERATURE DATA
+SST data were dowloaded from Lunt et al. 2021, https://doi.org/10.5194/cp-17-203-2021-supplement. 
+Original CESM simulations by Zhu, J., Poulsen, C. J., & Tierney, J. E. (2019). Simulation of Eocene extreme warmth and high climate sensitivity through cloud feedbacks. Science Advances, 5(9). https://doi.org/10.1126/sciadv.aax1874
 
-Temperature data were derrived...
+The downloaded SST_monthly_3x.csv, SST_monthly_6x.csv and SST_monthly_9x.csv files (in the current folder) are then used in the 'TEMPERATURE_scenario_creation.R' script.
+
+MODERN TEMPERATURE DATA
+Modern day temperature data were obtained from the NOAA atlas (Locarnini et al., 2019). The R-package oceanexplorer (Schobben, M. oceanexplorer: Explore Our Planet's Oceans with NOAA (Version 0.1.0)) was used to download the temperature files from the Ocean Atlas. The script to download these files can be found in the model_code folder: ocean_atlas_modernTemp_extraction.R
