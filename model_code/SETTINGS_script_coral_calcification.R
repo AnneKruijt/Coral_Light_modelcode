@@ -28,7 +28,7 @@ kpar_standard <- 0.05 # Very oligotrophic systems have even lower kpars (close t
 ## ----------- Prescribed settings for calcification and temperature tolerance -------------
 OmegaArag <- 3 # Value for present study doesnt really matter since we assume omega to be unlimiting everywhere
 Topt_high <- 26
-Tboundary_high <- 50 # set to 36 for normal upper boundary and 50 or higher in case of studying the effect of lower temperature boundary only
+Tboundary_high <- 36 # set to 36 for normal upper boundary and 50 or higher in case of studying the effect of lower temperature boundary only
 Tboundary_low <- 16
 
 

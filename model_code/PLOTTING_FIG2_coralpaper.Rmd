@@ -47,6 +47,14 @@ data_T9_t0_ddtvarUnlimMaxT <- read.csv("./output_for_plotting/_T9_f0_MAXT50_ddtV
 
 data_T9_t0_ddtvarUnlimMaxT_thresh_high <- read.csv("./output_for_plotting/_T9_f0_MAXT50_ddtVar_thresh_high_CalcYear_.csv")
 
+
+# for the temperature limitation plot
+dfT9LLO <- read.csv("./output_for_plotting/_T9_f0_MAXT36_LightNotLimit_ddtVar_CalcYear_.csv")
+dfT6LLO <- read.csv("./output_for_plotting/_T6_f0_MAXT36_LightNotLimit_ddtVar_CalcYear_.csv")
+dfT3LLO <- read.csv("./output_for_plotting/_T3_f0_MAXT36_LightNotLimit_ddtVar_CalcYear_.csv")
+dfTModernLLO <- read.csv("./output_for_plotting/_Tmodern_f0_MAXT36_LightNotLimit_ddtVar_CalcYear_.csv")
+
+
 ```
 
 #------------- creating data frame for plotting of combination of scenarios -------#
@@ -84,6 +92,12 @@ colnames(df9) <- c("latitude", "dd26", "dd365")
 df10 <- data_T9_t0_ddtvarUnlimMaxT_thresh_high
 colnames(df10) <- c("latitude", "dd26", "dd365")
 
+colnames(dfT9LLO) <- c("latitude", "dd26", "dd365")
+colnames(dfT6LLO) <- c("latitude", "dd26", "dd365")
+colnames(dfT3LLO) <- c("latitude", "dd26", "dd365")
+colnames(dfTModernLLO) <- c("latitude", "dd26", "dd365")
+                           
+
 ```
 
 
@@ -97,9 +111,17 @@ df_4 <- cbind(df4$dd365, df4$dd26)
 df_56 <- cbind(df5$dd365, df6$dd26, df5$dd26)  # T9 scenario with low threshold together with T9 with high threshold
 df_6 <- cbind(df6$dd365, df6$dd26)
 
-df_newT6 <- cbind( df7$dd365, df8$dd26, df4$dd365) # T6 no maxT limit and no light threshold; T6 no max T limit and high light threshold, T6 maxT at 36 and no ligth threshold
 
-df_newT9 <- cbind( df9$dd365, df9$dd26,df10$dd26, df6$dd365)  # T6 no maxT limit and no light threshold; T6 no max T limit and low light threshold, T6 maxT at 36 and no ligth threshold
+df_newT6 <- cbind( df7$dd365, df8$dd26, df4$dd365) # T6 no maxT limit and no light threshold; T6 no max T limit and high light threshold, T6 maxT at 36 and no light threshold
+
+df_newT9 <- cbind( df9$dd365, df9$dd26,df10$dd26, df6$dd365)  # T6 no maxT limit and no light threshold; T6 no max T limit and low light threshold, T6 maxT at 36 and no light threshold
+
+
+# combining all scenarios with no light limitation
+df_nolightlim_all <- cbind(dfTModernLLO$dd365, dfT3LLO$dd365, dfT6LLO$dd365, dfT9LLO$dd365)
+
+# t9 with light lim, low and high threshold
+df_T9_lightlim <- cbind(df6$dd26, df5$dd26)
 
 # scaling the matrices for better comparison of scenarios
 df_1 <- scaling(df_1)
@@ -110,6 +132,8 @@ df_56 <- scaling(df_56)
 df_6 <- scaling(df_6)
 df_newT6 <- scaling(df_newT6)
 df_newT9 <- scaling(df_newT9) 
+df_nolightlim_all <- scaling(df_nolightlim_all)
+df_T9_lightlim <- scaling(df_T9_lightlim)
 
 # creating a dataframe, for easy plotting
 df_to_plot1 <- as.data.frame(array(dim= c(length(latitude), length(df_1[1,])), data = df_1 ))
@@ -120,6 +144,8 @@ df_to_plot56 <- as.data.frame(array(dim= c(length(latitude), length(df_56[1,])),
 df_to_plot6 <- as.data.frame(array(dim= c(length(latitude), length(df_6[1,])), data = df_6 ))  
 df_to_plot6new <- as.data.frame(array(dim= c(length(latitude), length(df_newT6[1,])), data = df_newT6 ))
 df_to_plot9new <- as.data.frame(array(dim= c(length(latitude), length(df_newT9[1,])), data = df_newT9 ))
+df_to_plot_nolightlim_all <- as.data.frame(array(dim= c(length(latitude), length(df_nolightlim_all[1,])), data = df_nolightlim_all ))
+df_to_plot_T9lightlim <- as.data.frame(array(dim= c(length(latitude), length(df_T9_lightlim[1,])), data = df_T9_lightlim ))
 
 colnames(df_to_plot1) <- c('365 dark day tolerance') # , '30 dark day tolerance') #, '7 dark day tolerance')
 colnames(df_to_plot2) <- c('365 dark day tolerance')# , '28 dark day tolerance', '7 dark day tolerance')
@@ -128,6 +154,8 @@ colnames(df_to_plot4) <- c('365 dark day tolerance', '30 dark day tolerance')
 colnames(df_to_plot56) <- c('365 dark day tolerance', "eocene coral limit", '30 dark day tolerance')
 colnames(df_to_plot6new) <- c('365 dark day tolerance', "eocene coral limit", 'maxTemp included')
 colnames(df_to_plot9new) <- c('365 dark day tolerance', "25 dark day tolerance", "highthreshold", 'maxTemp included')
+colnames(df_to_plot_nolightlim_all) <- c("Tmodern", "T3", "T6", "T9")
+colnames(df_to_plot_T9lightlim) <- c("Elim = 20", "Elim = 105")
 
 df_to_plot1 <- cbind(df_to_plot1, latitude = latitude) #seq(0, 90,1)  )
 df_to_plot2 <- cbind(df_to_plot2, latitude = latitude)
@@ -137,6 +165,8 @@ df_to_plot56 <- cbind(df_to_plot56, latitude = latitude)
 df_to_plot6 <- cbind(df_to_plot6, latitude = latitude)
 df_to_plot6new <- cbind(df_to_plot6new, latitude = latitude)
 df_to_plot9new <- cbind(df_to_plot9new, latitude = latitude)
+df_to_plot_nolightlim_all <- cbind(df_to_plot_nolightlim_all, latitude = latitude)
+df_to_plot_T9lightlim <- cbind(df_to_plot_T9lightlim, latitude =latitude)
 
 df_long_to_plot1 <- melt(df_to_plot1 , id.vars = "latitude", measure.vars = c('365 dark day tolerance' ))
 df_long_to_plot2 <- melt(df_to_plot2 , id.vars = "latitude", measure.vars = c('365 dark day tolerance' ))
@@ -145,6 +175,8 @@ df_long_to_plot4 <- melt(df_to_plot4, id.vars = "latitude", measure.vars = c('36
 df_long_to_plot6new <- melt(df_to_plot6new, id.vars = "latitude", measure.vars = c('365 dark day tolerance', "eocene coral limit", 'maxTemp included'))
 df_long_to_plot9new <- melt(df_to_plot9new, id.vars = "latitude", measure.vars = c('365 dark day tolerance', "25 dark day tolerance", "highthreshold", 'maxTemp included'))
 
+df_long_to_plot_all <- melt(df_to_plot_nolightlim_all , id.vars = "latitude", measure.vars = c("Tmodern", "T3", "T6", "T9"))
+df_long_to_plot_T9_lightlim <- melt(df_to_plot_T9lightlim, id.vars = "latitude", measure.vars = c("Elim = 20", "Elim = 105") )
 
 ######################## function for adding text to the plots ###########################
 
@@ -224,6 +256,47 @@ p1_with_text_both <- add_text_box_both(p_yearlycalcification1, "Modern", "A")
 p2_with_text_both <- add_text_box_both(p_yearlycalcification2, "x3 CO2", "B")
 p3_with_text_both <- add_text_box_both(p_yearlycalcification3, "x6 CO2", "C")
 p4_with_text_both <- add_text_box_both(p_yearlycalcification4, "x9 CO2", "D")
+
+
+```
+
+# Plotting differently
+```{r}
+col = (hcl.colors(5, "Zissou 1"))
+
+p_yearlycalcification_tempcontrol <- ggplot(data = df_long_to_plot_all, aes(x = latitude, y = value, col= variable)) +
+  geom_line(size = 0.8) +
+  scale_color_manual(values=c(col[1], col[3], col[4], col[5]))+
+  scale_x_continuous(breaks = seq(0, 90, 10), name = "Latitude") +
+  scale_y_continuous(breaks = seq(0,100, 10), name= " % of maximum calcification") +
+  theme_classic()+
+  theme(axis.title.x = element_text(size =12), axis.title.y = element_text(size = 12), panel.grid.major = element_line(color = "gray", linetype = "solid")) +
+  theme(legend.position = "none")
+
+p_yearlycalcification_withlight <- ggplot(data = df_long_to_plot_T9_lightlim, aes(x = latitude, y = value, lty= variable)) +
+  geom_line(size = 0.8, color = col[5]) +
+  scale_x_continuous(breaks = seq(0, 90, 10), name = "Latitude") +
+  scale_y_continuous(breaks = seq(0,100, 10), name= " % of maximum calcification") +
+  theme_classic()+
+  theme(axis.title.x = element_text(size =12), axis.title.y = element_text(size = 12), panel.grid.major = element_line(color = "gray", linetype = "solid")) +
+  theme(legend.position = "none")
+
+p_yearlycalcification_withlight
+
+
+```
+
+```{r}
+
+pdfname = "FIGURE2_CORAL_PAPER_REVISED"
+fullpdfname = paste0("./figures/", pdfname,".pdf")
+
+pdf(file= fullpdfname, width = 12, height = 14)
+
+p_yearlycalcification_tempcontrol
+
+
+dev.off()
 
 
 ```

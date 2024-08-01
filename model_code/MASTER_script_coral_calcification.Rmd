@@ -129,12 +129,13 @@ We chose not to make one large tibble, but to make a separate tibble for each te
 # naming the scenario that is being run, to be used in the naming of the resulting csv file
 TSET <- "T9" # T3, T9, Tstable, Tmodern
 FTSET <- "f0" 
-MAXT <- "MAXT50"
+MAXT <- "MAXT36"
+LIGHT <- "LightNotLimit"
 
 print("Have you changed the scenarios below TSET accordingly?")
 
 # selecting the scenarios to use (check that you changed names above to fit the scenarios selected)
-t1 <- TscenariosT9minM 
+t1 <- TscenariosT9minM
 t2 <- TscenariosT9maxM
 tcurve <- Tcurve_scenarios0
 
@@ -213,12 +214,12 @@ print("Now write to file")
 
 filelocation <- "./model_output/" 
 
-write.csv(CalcYear_kpar_var$out, paste(filelocation, TSET, FTSET,MAXT, "kparVar","CalcYear", ".csv", sep = "_"))
-write.csv(CalcYear_Ek_var$out, paste(filelocation, TSET, FTSET, MAXT, "EkVar", "CalcYear", ".csv", sep = "_"))
-write.csv(CalcYear_ddt_var$out, paste(filelocation,  TSET, FTSET,MAXT,"ddtVar", "CalcYear", ".csv", sep = "_"))
-write.csv(CalcYear_nolightlim$out, paste(filelocation,  TSET, FTSET, MAXT, "No-light-lim","CalcYear",".csv", sep = "_"))
-write.csv(CalcYear_ddt_var_thresh_high$out, paste(filelocation,  TSET, FTSET, MAXT, "ddtVar","thresh_high", "CalcYear", ".csv", sep = "_"))
-write.csv(CalcYear_nolightlim_thresh_high$out, paste(filelocation, TSET, FTSET, "No-light-lim", "thresh_high","CalcYear",".csv", sep = "_"))
+write.csv(CalcYear_kpar_var$out, paste(filelocation, TSET, FTSET,MAXT, LIGHT, "kparVar","CalcYear", ".csv", sep = "_"))
+write.csv(CalcYear_Ek_var$out, paste(filelocation, TSET, FTSET, MAXT, LIGHT, "EkVar", "CalcYear", ".csv", sep = "_"))
+write.csv(CalcYear_ddt_var$out, paste(filelocation,  TSET, FTSET,MAXT, LIGHT,"ddtVar", "CalcYear", ".csv", sep = "_"))
+write.csv(CalcYear_nolightlim$out, paste(filelocation,  TSET, FTSET, MAXT, LIGHT, "No-light-lim","CalcYear",".csv", sep = "_"))
+write.csv(CalcYear_ddt_var_thresh_high$out, paste(filelocation,  TSET, FTSET, MAXT, LIGHT, "ddtVar","thresh_high", "CalcYear", ".csv", sep = "_"))
+write.csv(CalcYear_nolightlim_thresh_high$out, paste(filelocation, TSET, FTSET, MAXT, LIGHT,"No-light-lim", "thresh_high","CalcYear",".csv", sep = "_"))
 
 write.csv(Irradiance_simulated, paste(filelocation, "Irradiance_simulated",".csv", sep = "_" ))
 write.csv(df_darkdays_Ek50, paste(filelocation, "Darkdays_simulated_Ek50",".csv", sep = "_" ))

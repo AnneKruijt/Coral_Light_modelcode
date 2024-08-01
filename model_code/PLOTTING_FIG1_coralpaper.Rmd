@@ -31,8 +31,8 @@ library(tidyr)
 # reading in reef occurrences table}
 ## data obtained from: Kiessling, W., & Krause, M. C. (2022). PARED - An online database of Phanerozoic reefs. https://www.paleo-reefs.pal.uni-erlangen.de 
 
-LATLON_data <- read.csv("./data_files/Eocene_latlon_corals.csv", sep = ";") # file containing coordinates of the Eocene coral occurrences
-Yaxis <- rep(1, length(LATLON_data$PALEO.LAT..Scotese.))  # y set to 1, because the y-axis is not meaningful for 'occurrence'
+LATLON_data <- read.csv("./data_files/Paleo_coral_reef_latlon.csv", sep = ";")  # file containing coordinates of the Eocene coral occurrences
+Yaxis <- rep(1, length(LATLON_data$Paleo.LAT ))  # y set to 1, because the y-axis is not meaningful for 'occurrence'
 
 # reading in temperature data
 ## original Eocene temperature data obtained from: Zhu, J., Poulsen, C. J., & Tierney, J. E. (2019). Simulation of Eocene extreme warmth and high climate sensitivity through cloud feedbacks. Science Advances, 5(9). https://doi.org/10.1126/sciadv.aax1874 
@@ -88,7 +88,7 @@ plotcolors <- c(colors[1], colors[3], colors[4], colors[5])
 plot_fig1 <- ggplot() +
   geom_line(data = data_long, aes(x = Latitude, y = Temperature, color = Scenario), linewidth = 1.) +
   scale_color_manual(values = plotcolors)+
-  geom_point(data = LATLON_data, aes(x = PALEO.LAT..Scotese., y = Yaxis), shape = 22, color = "coral", size=3) + 
+  geom_point(data = LATLON_data, aes(x = Paleo.LAT, y = Yaxis), shape = 22, color = "coral", size=3) + 
   geom_polygon_pattern(
     data = data.frame(x = c(-34, 34, 34, -34), y = c(16, 16, 36, 36)),
     aes(x, y),

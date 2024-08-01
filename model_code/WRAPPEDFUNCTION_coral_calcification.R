@@ -133,7 +133,7 @@ Model_simulation <- function(darkday_tolerance_ms,
   # calc_reef_year_nolightlim <- calcfunc(OmegaArag, light_not_limiting, Temp_limitation)
   
   ##### In case of inspecting calcification potential solely depending on temperature and light limitation
-  calc_reef <-  1 * Temp_limitation * light_limitation # calcification potential per day
+  calc_reef <-  1 * Temp_limitation * light_not_limiting#light_limitation # calcification potential per day
   calc_reef <- pmax(calc_reef, 0)  # making sure there is no negative calcification
   calc_reef[is.nan(calc_reef) == TRUE] <- 0
   

@@ -15,7 +15,12 @@ source("./model_code/FUNCTIONS_script_coral_calcification.R")
 
 
 # --------- reading in CESM files
-# reference:	Zhu, J., Poulsen, C. J., & Tierney, J. E. (2019). 
+# reference: data made available by: 
+# Lunt et al.(2021). DeepMIP: model intercomparison of early Eocene climatic optimum (EECO) large-scale
+# climate features and comparison with proxy data, Clim. Past, 17, 203–227, 
+# https://doi.org/10.5194/cp-17-203-2021
+
+# Original CESM simulations by Zhu, J., Poulsen, C. J., & Tierney, J. E. (2019). 
 # Simulation of Eocene extreme warmth and high climate sensitivity through cloud feedbacks. 
 # Science Advances, 5(9). https://doi.org/10.1126/sciadv.aax1874
 
